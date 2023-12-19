@@ -1,4 +1,4 @@
-// A C# program for Client
+
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -11,7 +11,6 @@ namespace Client {
 class Program {
 
 private static string _password ="Thala07";
-// Main Method
 static void Main(string[] args)
 {   
 	ExecuteClient();
@@ -28,22 +27,15 @@ static string EncryptOrDecrpyt(string input,string password,bool IsEncrypt){
     }
     return Encoding.ASCII.GetString(resultString.ToArray());
 }
-// ExecuteClient() Method
 static void ExecuteClient()
 {
 
 	try {
 		
-		// Establish the remote endpoint 
-		// for the socket. This example 
-		// uses port 11111 on the local 
-		// computer.
 		IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
 		IPAddress ipAddr = ipHost.AddressList[0];
 		IPEndPoint localEndPoint = new IPEndPoint(ipAddr, 11111);
 
-		// Creation TCP/IP Socket using 
-		// Socket Class Constructor
 		Socket sender = new Socket(ipAddr.AddressFamily,
 				SocketType.Stream, ProtocolType.Tcp);
 
@@ -69,7 +61,6 @@ static void ExecuteClient()
 			sender.Close();
 		}
 		
-		// Manage of Socket's Exceptions
 		catch (ArgumentNullException ane) {
 			
 			Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
