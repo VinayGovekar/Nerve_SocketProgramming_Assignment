@@ -3,17 +3,31 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-
+using System.IO;
+using System.Security.Cryptography;
+using System.Collections.Generic;
 namespace Client {
 
 class Program {
 
+private static string _password ="Thala07";
 // Main Method
 static void Main(string[] args)
-{
+{   
 	ExecuteClient();
 }
 
+static string EncryptOrDecrpyt(string input,string password,bool IsEncrypt){
+    var resultString = new List<byte>();
+    var count = password.Length;
+    foreach(var x in Encoding.ASCII.GetBytes(input)){
+        if(IsEncrypt)
+            resultString.Add(Convert.ToByte(Convert.ToInt32(x)+count));
+        else
+            resultString.Add(Convert.ToByte(Convert.ToInt32(x)-count));
+    }
+    return Encoding.ASCII.GetString(resultString.ToArray());
+}
 // ExecuteClient() Method
 static void ExecuteClient()
 {
@@ -39,7 +53,7 @@ static void ExecuteClient()
             Console.WriteLine("*** Client Is Started Now ***\n\n");
             Console.WriteLine("Please input your message for the server: ");
             var input = Console.ReadLine();
-			byte[] messageSent = Encoding.ASCII.GetBytes(input);
+			byte[] messageSent = Encoding.ASCII.GetBytes(EncryptOrDecrpyt(input,_password,true));
 			int byteSent = sender.Send(messageSent);
 
 			while(true){
@@ -47,8 +61,7 @@ static void ExecuteClient()
                 byte[] messageReceived = new byte[1024];
 
 			    int byteRecv = sender.Receive(messageReceived);
-                var data =Encoding.ASCII.GetString(messageReceived, 
-											0, byteRecv);
+                var data =EncryptOrDecrpyt(Encoding.ASCII.GetString(messageReceived,0, byteRecv),_password,false);
                 if(data=="-1") break;
                 Console.WriteLine(data);
             }

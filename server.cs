@@ -4,14 +4,27 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Collections.Generic;
+
 namespace Server {
 
 class Program {
 
-// Main Method
+private static string _password ="Thala07";
 static void Main(string[] args)
 {
 	ExecuteServer();
+}
+
+static string EncryptOrDecrpyt(string input,string password,bool IsEncrypt){
+    var resultString = new List<byte>();
+    var count = password.Length;
+    foreach(var x in Encoding.ASCII.GetBytes(input)){
+        if(IsEncrypt)
+            resultString.Add(Convert.ToByte(Convert.ToInt32(x)+count));
+        else
+            resultString.Add(Convert.ToByte(Convert.ToInt32(x)-count));
+    }
+    return Encoding.ASCII.GetString(resultString.ToArray());
 }
 
 public static Dictionary<string,int> GetSubData(string[] number,int[] num){
@@ -49,8 +62,7 @@ public static void ExecuteServer()
 	IPAddress ipAddr = ipHost.AddressList[0];
 	IPEndPoint localEndPoint = new IPEndPoint(ipAddr, 11111);
 
-	Socket listener = new Socket(ipAddr.AddressFamily,
-				SocketType.Stream, ProtocolType.Tcp);
+	Socket listener = new Socket(ipAddr.AddressFamily,SocketType.Stream, ProtocolType.Tcp);
     
     var serverData = CreateServerCollection();
 
@@ -60,19 +72,14 @@ public static void ExecuteServer()
 
 		listener.Listen(10);
         
-		Console.WriteLine("* Server Started Now *\n");
+		Console.WriteLine("\n*** Server Started Now ***\n");
 
 		while (true) {
 			
-			Console.WriteLine("Waiting connection ... ");
+			Console.WriteLine("\nWaiting connection ... \n");
 
-			// Suspend while waiting for
-			// incoming connection Using 
-			// Accept() method the server 
-			// will accept connection of client
 			Socket clientSocket = listener.Accept();
 
-			// Data buffer
 			byte[] bytes = new Byte[1024];
 			string data = null;
             int result=-1;
@@ -80,24 +87,21 @@ public static void ExecuteServer()
 			while (true) {
 
 				int numByte = clientSocket.Receive(bytes);
-				
-				data += Encoding.ASCII.GetString(bytes,
-										0, numByte);
-                result = ProcessClientData(serverData,data);
+				data += Encoding.ASCII.GetString(bytes,0, numByte);
+                result = ProcessClientData(serverData,EncryptOrDecrpyt(data,_password,false));
                 break;
 			}
 
-			Console.WriteLine("Text received from Client -> {0} ", data.ToString());
             if(result!=-1){
                 for(int i=1;i<=result;i++){
                     var currentTime = DateTime.Now.ToString();
                     Console.WriteLine(currentTime);
-                    byte[] messageI = Encoding.ASCII.GetBytes(currentTime);
+                    byte[] messageI = Encoding.ASCII.GetBytes(EncryptOrDecrpyt(currentTime,_password,true));
 			        clientSocket.Send(messageI);
                     System.Threading.Thread.Sleep(1000);
                 }
             }
-            byte[] message = Encoding.ASCII.GetBytes("-1");
+            byte[] message = Encoding.ASCII.GetBytes(EncryptOrDecrpyt("-1",_password,true));
 		    clientSocket.Send(message);
             
 
