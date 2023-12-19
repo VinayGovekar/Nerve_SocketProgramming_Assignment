@@ -62,8 +62,8 @@ static void ExecuteClient()
 
 			    int byteRecv = sender.Receive(messageReceived);
                 var data =EncryptOrDecrpyt(Encoding.ASCII.GetString(messageReceived,0, byteRecv),_password,false);
-                if(data=="-1") break;
-                Console.WriteLine(data);
+                if(data=="-1" || data=="") break;
+                if(data!="-1") Console.WriteLine(data);
             }
             sender.Shutdown(SocketShutdown.Both);
 			sender.Close();

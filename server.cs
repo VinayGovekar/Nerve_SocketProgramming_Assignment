@@ -47,8 +47,9 @@ public static Dictionary<string,Dictionary<string,int>> CreateServerCollection()
 }
 
 public static int ProcessClientData(Dictionary<string,Dictionary<string,int>> serverData,string clientData){
-    if(clientData==null || clientData.Length==0) return -1;
+    if(clientData==null || clientData.Length<7) return -1;
     string[] clientDataParts = clientData.Split('-');
+    if(clientDataParts.Length<2) return -1;
     if(!serverData.ContainsKey(clientDataParts[0])) return -1;
     var dataOne = serverData[clientDataParts[0]];
     if(!dataOne.ContainsKey(clientDataParts[1])) return -1;
@@ -101,8 +102,13 @@ public static void ExecuteServer()
                     System.Threading.Thread.Sleep(1000);
                 }
             }
-            byte[] message = Encoding.ASCII.GetBytes(EncryptOrDecrpyt("-1",_password,true));
-		    clientSocket.Send(message);
+            else{
+                byte[] message3 = Encoding.ASCII.GetBytes(EncryptOrDecrpyt("EMPTY",_password,true));
+		        clientSocket.Send(message3);
+                System.Threading.Thread.Sleep(1000);
+            }
+            byte[] message2 = Encoding.ASCII.GetBytes(EncryptOrDecrpyt("-1",_password,true));
+		    clientSocket.Send(message2);
             
 
 			clientSocket.Shutdown(SocketShutdown.Both);
